@@ -155,7 +155,13 @@ class GuiTests(SyntheticProject):
         except tk.TclError:
             self.skipTest("No desktop display or working Tcl/Tk installation")
         self.window.withdraw()
-        self.addCleanup(self.window.destroy)
+        def destroy_window():
+            try:
+                self.window.update_idletasks()
+                self.window.destroy()
+            except tk.TclError:
+                pass  # The teardown regression deliberately destroys its own root.
+        self.addCleanup(destroy_window)
         self.gui = gui
         self.app = gui.TransferApp(self.window, auto_discover=False)
 
@@ -196,17 +202,16 @@ class GuiTests(SyntheticProject):
         convert.assert_not_called()
 
     def test_destroy_cancels_pending_poll_callback(self):
-        other_window = self.gui.tk.Tk()
-        other_window.withdraw()
-        other_app = self.gui.TransferApp(other_window, auto_discover=False)
-        self.assertIsNotNone(other_app._drain_after_id)
+        # Tk interpreters on one thread share an event queue; two concurrent
+        # roots can leave Cocoa's event loop blocked in the following test.
+        pending_timer = self.app._drain_after_id
+        self.assertIsNotNone(pending_timer)
         # Flush Tcl's own pending theme events before destroying this interpreter.
-        other_window.update_idletasks()
-        other_window.destroy()
-        self.assertTrue(other_app._destroyed)
-        self.assertIsNone(other_app._drain_after_id)
-        # Starting a later interpreter must not run a deleted Python callback.
-        self.window.update()
+        self.window.update_idletasks()
+        self.window.destroy()
+        self.assertTrue(self.app._destroyed)
+        self.assertIsNone(self.app._drain_after_id)
+        self.assertNotIn(pending_timer, self.window.tk.call("after", "info"))
 
 
 if __name__ == "__main__":
