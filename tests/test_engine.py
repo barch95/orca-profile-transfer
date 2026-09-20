@@ -282,6 +282,15 @@ class EngineTests(unittest.TestCase):
         make_project(self.source, cfg)
         self.assertNotIn('refresh_token', self.output_config(convert_project(self.source, target_profile())))
 
+    def test_target_connection_selectors_survive_without_credentials(self):
+        selectors = dict(host_type='duet', bbl_use_printhost='1', printer_agent='example-agent',
+                         printhost_authorization_type='user', printhost_ssl_ignore_revoke='1')
+        result = self.output_config(convert_project(self.source, target_profile(**selectors)))
+        for key, value in selectors.items():
+            self.assertEqual(result[key], value)
+        self.assertNotIn('printhost_password', result)
+        self.assertNotIn('print_host', result)
+
     def test_hardware_project_selectors_use_target_without_changing_materials(self):
         cfg = source_config()
         cfg.update(nozzle_volume_type=['High Flow'], extruder_ams_count=['synthetic feeder inventory'])

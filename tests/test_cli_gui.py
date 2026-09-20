@@ -199,6 +199,8 @@ class GuiTests(SyntheticProject):
         other_window.withdraw()
         other_app = self.gui.TransferApp(other_window, auto_discover=False)
         self.assertIsNotNone(other_app._drain_after_id)
+        # Flush Tcl's own pending theme events before destroying this interpreter.
+        other_window.update_idletasks()
         other_window.destroy()
         self.assertTrue(other_app._destroyed)
         self.assertIsNone(other_app._drain_after_id)

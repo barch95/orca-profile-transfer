@@ -25,11 +25,14 @@ class ProfileError(ValueError):
 
 # Connection values deliberately stay in Orca's saved preset. Matching the exact
 # saved preset identity lets Orca retain its own connection handling on import.
+SAFE_CONNECTION_KEYS = frozenset({
+    "host_type", "bbl_use_printhost", "printer_agent",
+    "printhost_authorization_type", "printhost_ssl_ignore_revoke",
+})
 CONNECTION_KEYS = frozenset({
-    "host_type", "print_host", "print_host_webui", "printhost_apikey",
-    "printhost_cafile", "printhost_port", "printhost_authorization_type",
-    "printhost_user", "printhost_password", "printhost_ssl_ignore_revoke",
-    "bbl_use_printhost", "printer_agent", "flashforge_serial_number",
+    "print_host", "print_host_webui", "printhost_apikey",
+    "printhost_cafile", "printhost_port",
+    "printhost_user", "printhost_password", "flashforge_serial_number",
     "access_code", "access_token", "refresh_token", "api_key", "password",
     "device_id", "dev_id", "ip_address", "serial_number",
 })
@@ -112,7 +115,8 @@ def _json(path: Path, *, config: bool = False) -> dict[str, object]:
 def _public_settings(settings: dict[str, object]) -> dict[str, object]:
     result = {key: copy.deepcopy(value) for key, value in settings.items()
             if key not in CONNECTION_KEYS and key not in _PRIVATE_METADATA
-            and key not in _IGNORED_VENDOR_FIELDS and not key.startswith("printhost_")}
+            and key not in _IGNORED_VENDOR_FIELDS
+            and (not key.startswith("printhost_") or key in SAFE_CONNECTION_KEYS)}
     for old, current in _LEGACY_ALIASES.items():
         if old in result:
             result.setdefault(current, result.pop(old))

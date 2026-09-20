@@ -75,7 +75,9 @@ not establish native slicer behavior.
 - Geometry, transforms, placement, painting, and object/modifier/height-range
   content, except the documented printer/plate metadata changes.
 - The selected target's explicit inherited printer configuration and preset
-  identity, with credentials and local-only connection information excluded.
+  identity, with credentials and machine addresses excluded. Non-secret host,
+  plugin, and authentication-method selectors remain from the target to preserve
+  local connection handling.
 
 Source printer-owned settings are removed before the target is applied. Options
 not explicitly assigned by the target inheritance chain are left for Orca's

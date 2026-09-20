@@ -212,10 +212,12 @@ class ProfileTests(unittest.TestCase):
 
     def test_connection_and_sync_fields_removed_from_memory(self):
         self.vendor()
-        self.user(print_host="private.invalid", printhost_password="synthetic-secret", user_id="synthetic-account", setting_id="synthetic-id", machine_start_gcode="G28")
+        self.user(print_host="private.invalid", printhost_password="synthetic-secret", user_id="synthetic-account", setting_id="synthetic-id", machine_start_gcode="G28", host_type="duet", printhost_authorization_type="user")
         found = load_printer_profiles(self.config)
         self.assertFalse(set(found[0].settings) & (profiles.CONNECTION_KEYS | profiles._PRIVATE_METADATA))
         self.assertEqual(found[0].settings["machine_start_gcode"], "G28")
+        self.assertEqual(found[0].settings["host_type"], "duet")
+        self.assertEqual(found[0].settings["printhost_authorization_type"], "user")
         self.assertNotIn("synthetic-secret", repr(found[0]))
 
     def test_enabled_stock_profiles_use_vendor_model_variant(self):

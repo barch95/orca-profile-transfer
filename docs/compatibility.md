@@ -56,11 +56,14 @@ physical nozzle mappings point to that nozzle, and source AMS-count metadata is
 omitted. Logical filament slot numbers and their per-object assignments remain
 unchanged. Recheck physical feeder assignments in Orca before printing.
 
-Orca deliberately excludes connection fields when loading external presets. The
-converter preserves target preset identity and excludes known connection secrets
-from the project. This leaves connection handling to the existing locally saved
-profile. Matching a display name alone is insufficient evidence that a connection
-will work; confirm the saved printer in Orca.
+Orca deliberately excludes credentials and addresses when loading external
+presets, but it can still apply non-secret connection selectors. The converter
+preserves target preset identity and the target's host, plugin, and
+authentication-method selectors, while excluding credentials and machine
+addresses from the project. This preserves the selected profile's connection
+handling without exporting its secrets. Matching a display name alone is
+insufficient evidence that a connection will work; confirm the saved printer in
+Orca.
 
 ## Plates and materials
 

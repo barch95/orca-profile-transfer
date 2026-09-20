@@ -15,7 +15,7 @@ import xml.etree.ElementTree as ET
 import zipfile
 
 from .geometry import GeometryError, check_fit, local_name, xml_document
-from .profiles import PrinterProfile, CONNECTION_KEYS as PROFILE_CONNECTION_KEYS
+from .profiles import PrinterProfile, SAFE_CONNECTION_KEYS, CONNECTION_KEYS as PROFILE_CONNECTION_KEYS
 
 SCHEMA = json.loads(Path(__file__).with_name('schema.json').read_text(encoding='utf-8'))
 PRINTER_KEYS = set(SCHEMA['printer_keys'])
@@ -58,6 +58,8 @@ class ConversionResult:
 
 def _private(key):
     key = key.casefold()
+    if key in SAFE_CONNECTION_KEYS:
+        return False
     return (key in CONNECTION_KEYS or key in PROFILE_CONNECTION_KEYS or key.startswith('printhost_') or
             any(term in key for term in ('password', 'api_key', 'apikey', 'access_token', 'auth_token', 'credential')))
 
