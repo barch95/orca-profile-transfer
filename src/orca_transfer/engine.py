@@ -218,8 +218,20 @@ def _configuration(source, profile, plate, warnings):
     selected = plate or default_plate_type(profile)
     if selected not in PLATES:
         raise ConversionError('This profile has no recognized default plate. Select the plate fitted to the target printer explicitly.')
-    target_variants = target.get('printer_extruder_variant', ['Direct Drive Standard'])
-    if not isinstance(target_variants, list) or not target_variants:
+    target_variants = target.get('printer_extruder_variant')
+    layout = target.get('extruder_variant_list')
+    if layout is not None:
+        # Orca expands the comma-separated variant list for each physical nozzle
+        # in PrintConfig.cpp::extend_extruder_variant. It is not a material list.
+        if not isinstance(layout, list) or len(layout) != 1 or not isinstance(layout[0], str):
+            raise ConversionError('Unsupported target physical-nozzle variant layout.')
+        expanded = [item.strip() for item in layout[0].split(',')]
+        if target_variants is not None and target_variants != expanded:
+            raise ConversionError('The target printer has inconsistent extruder variant declarations. Re-save its variant layout in Orca before transferring.')
+        target_variants = expanded
+    if target_variants is None:
+        target_variants = ['Direct Drive Standard']
+    if not isinstance(target_variants, list) or not target_variants or any(not isinstance(v, str) or not v for v in target_variants) or len(set(target_variants)) != len(target_variants):
         raise ConversionError('Invalid target printer extruder variants.')
     for slot in range(1, count+1):
         available = {v for i,v in zip(indices, variants) if i == slot}
@@ -265,6 +277,8 @@ def _configuration(source, profile, plate, warnings):
     # These are project-level hardware selectors, not logical material indices.
     # Retain the material variant table but select the target's default hardware.
     result['nozzle_volume_type'] = copy.deepcopy(target.get('default_nozzle_volume_type', ['Standard']))
+    result['printer_extruder_id'] = ['1'] * len(target_variants)
+    result['printer_extruder_variant'] = copy.deepcopy(target_variants)
     result['print_extruder_id'] = ['1'] * len(target_variants)
     result['print_extruder_variant'] = copy.deepcopy(target_variants)
     result['filament_map'] = ['1'] * count

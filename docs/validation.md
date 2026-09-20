@@ -4,7 +4,7 @@ Validated locally on Windows and on GitHub-hosted runners on 2026-09-20. These
 results describe the tested cases, not a guarantee for arbitrary printers or
 projects.
 
-- 78 synthetic unit/integration tests passed with Python 3.12 and 3.13. Tests cover
+- 80 synthetic unit/integration tests passed with Python 3.12 and 3.13. Tests cover
   account/vendor inheritance, legacy profile aliases, ambiguous names, secret
   exclusion, untouched source files, output collisions, geometric fit checks,
   model bytes, local process settings, painting, height-range metadata, logical

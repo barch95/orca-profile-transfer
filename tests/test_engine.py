@@ -175,6 +175,21 @@ class EngineTests(unittest.TestCase):
         with self.assertRaisesRegex(ConversionError, 'no matching source'):
             convert_project(self.source, target_profile(printer_extruder_variant=['Direct Drive High Flow']))
 
+    def test_target_variant_list_expands_without_assuming_standard(self):
+        cfg = source_config()
+        cfg['filament_extruder_variant'] = ['Direct Drive High Flow'] * 2
+        make_project(self.source, cfg)
+        target = target_profile(extruder_variant_list=['Direct Drive High Flow'], default_nozzle_volume_type=['High Flow'])
+        target.settings.pop('printer_extruder_variant')
+        out = self.output_config(convert_project(self.source, target))
+        self.assertEqual(out['printer_extruder_variant'], ['Direct Drive High Flow'])
+        self.assertEqual(out['print_extruder_variant'], ['Direct Drive High Flow'])
+        self.assertEqual(out['filament_flow_ratio'], cfg['filament_flow_ratio'])
+
+    def test_inconsistent_target_variant_layout_rejected(self):
+        with self.assertRaisesRegex(ConversionError, 'inconsistent extruder'):
+            convert_project(self.source, target_profile(extruder_variant_list=['Direct Drive High Flow']))
+
     def test_bad_variant_layout_rejected(self):
         cfg = source_config()
         cfg['filament_self_index'] = ['1','3']
