@@ -167,9 +167,15 @@ class GuiTests(SyntheticProject):
 
     def wait_for_worker(self):
         deadline = time.monotonic() + 10
-        while self.app.busy and time.monotonic() < deadline:
-            self.window.update()
-            time.sleep(0.01)
+        def poll():
+            if not self.app.busy or time.monotonic() >= deadline:
+                self.window.quit()
+            else:
+                self.window.after(10, poll)
+        # Match the real application event loop; repeated update() can block
+        # inside Cocoa's nested event processing on macOS.
+        self.window.after(10, poll)
+        self.window.mainloop()
         self.assertFalse(self.app.busy, "GUI worker did not finish")
 
     def test_hidden_widget_smoke_and_real_threaded_conversion(self):
