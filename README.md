@@ -15,6 +15,16 @@ a universal 3MF or hardware converter.
 Read [supported formats and limits](docs/compatibility.md) before relying on a
 conversion. Settings classification is pinned to OrcaSlicer **2.4.1**.
 
+## Download
+
+Get the **Windows GUI preview** from [Releases](https://github.com/barch95/orca-profile-transfer/releases).
+Download `Orca-Profile-Transfer-Windows.zip`, extract the whole archive, and open
+`OrcaProfileTransfer.exe` inside the application folder. No separate Python
+installation is needed. The preview is unsigned.
+
+For macOS and Linux, use the source instructions below until native bundles have
+been built and verified.
+
 ## Run from source
 
 Install Python 3.10 or newer with Tkinter. On Windows and macOS, a standard
@@ -133,9 +143,9 @@ real printer profiles. It needs a display server; Linux CI uses Xvfb. Test
 fixtures are generated synthetic projects and profiles, with no user files.
 
 GitHub Actions defines tests on Windows, macOS, and Linux with Python 3.10, 3.12,
-and 3.13. A separate manual workflow builds desktop bundles. Configuring CI is
-not proof that those remote runs have passed. Native macOS/Linux GUI use and
-opening converted projects in those slicer installations still need validation.
+and 3.13. The initial nine-job matrix passed, including the GUI regressions.
+A separate manual workflow builds desktop bundles. Manual macOS/Linux GUI use
+and opening converted projects in those slicer installations still need validation.
 See [build and release instructions](docs/building.md), the [Python API](docs/api.md),
 the [local validation record](docs/validation.md), and the repository's actual
 Actions results for the current state.

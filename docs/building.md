@@ -66,8 +66,10 @@ produces an Actions artifact containing its ZIP. The workflow has read-only
 repository permissions and does not create releases, tags, or upload packages to
 a public package index.
 
-The first successful matrix run is still required after the repository is
-published. CI configuration alone does not establish macOS/Linux runtime support.
+The initial nine-job test matrix passed on Windows, macOS, and Linux; see the
+[validation record](validation.md). This verifies the automated GUI and engine
+checks, not manual use, native desktop bundles, or Orca's loading and slicing on
+every platform.
 
 ## Before publishing a release
 
