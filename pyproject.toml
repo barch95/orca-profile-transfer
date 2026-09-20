@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=77,<83"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "orca-profile-transfer"
+version = "0.1.0"
+description = "Transfer editable Orca/Bambu 3MF projects to a saved OrcaSlicer printer profile"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "AGPL-3.0-or-later"
+license-files = ["LICENSE", "THIRD_PARTY_NOTICES.md"]
+authors = [{name = "Orca Profile Transfer contributors"}]
+keywords = ["3mf", "orcaslicer", "3d-printing", "profile", "tkinter"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: X11 Applications",
+  "Intended Audience :: End Users/Desktop",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: MacOS",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Topic :: Multimedia :: Graphics :: 3D Modeling",
+]
+dependencies = []
+
+[project.optional-dependencies]
+build = ["build>=1.2,<2", "pyinstaller>=6.16,<7"]
+
+[project.scripts]
+orca-transfer = "orca_transfer.cli:main"
+
+[project.gui-scripts]
+orca-profile-transfer = "orca_transfer.gui:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+orca_transfer = ["*.json", "data/*.json"]

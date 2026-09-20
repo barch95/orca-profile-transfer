@@ -1,0 +1,46 @@
+name: Build desktop bundles
+
+# Manual builds create downloadable Actions artifacts, never GitHub releases.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            label: windows-x64
+          - os: macos-14
+            label: macos-arm64
+          - os: macos-15-intel
+            label: macos-x64
+          - os: ubuntu-22.04
+            label: linux-x64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Linux GUI libraries
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y python3-tk
+      - name: Install build tools
+        run: python -m pip install ".[build]"
+      - name: Synthetic regression tests
+        run: python -m unittest discover -s tests -v
+      - name: Build GUI bundle
+        run: python -m PyInstaller --noconfirm --clean --onedir --windowed --name OrcaProfileTransfer --collect-data orca_transfer scripts/gui_entry.py
+      - name: Assemble archive, notices, and matching source
+        run: python scripts/package_bundle.py --label ${{ matrix.label }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: OrcaProfileTransfer-${{ matrix.label }}
+          path: release/*.zip
+          if-no-files-found: error
+          retention-days: 14

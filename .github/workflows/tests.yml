@@ -1,0 +1,42 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, windows-latest, macos-latest]
+        python: ["3.10", "3.12", "3.13"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Linux GUI libraries
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y python3-tk xvfb
+      - name: Install package
+        run: python -m pip install .
+      - name: Synthetic regression tests
+        run: python -m unittest discover -s tests -v
+      - name: CLI startup
+        run: orca-transfer --help
+      - name: Tk startup on Linux
+        if: runner.os == 'Linux'
+        run: xvfb-run -a python -m orca_transfer --smoke-test
+      - name: Tk startup on Windows and macOS
+        if: runner.os != 'Linux'
+        run: python -m orca_transfer --smoke-test
+      - name: Verify wheel and source distribution
+        run: |
+          python -m pip install "build>=1.2,<2"
+          python -m build

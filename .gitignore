@@ -1,0 +1,49 @@
+# Python and local development
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Build products
+build/
+dist/
+*.spec
+release/
+
+# Never commit real projects, profiles, credentials, or diagnostic logs.
+# Public tests construct synthetic files in temporary directories.
+*.3mf
+*.gcode
+*.gcode.3mf
+*.bgcode
+*.stl
+*.step
+*.stp
+*.log
+*.ini
+*.conf
+*.config
+*.pem
+*.key
+.env
+.env.*
+profiles/
+user/
+user_backup*/
+system/
+private/
+work/
+local-data/
+
+# Editor and OS metadata
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+desktop.ini
