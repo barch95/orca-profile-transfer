@@ -87,7 +87,8 @@ class CliTests(SyntheticProject):
         status, stdout, stderr = self.run_cli("--list-printers", "--config", str(self.config))
         self.assertEqual(status, 0)
         self.assertIn("Synthetic target [Custom]", stdout)
-        self.assertIn(str(self.preset_path), stdout)
+        # The CLI resolves paths, including Windows 8.3 and macOS /var aliases.
+        self.assertIn(str(self.preset_path.resolve()), stdout)
         self.assertNotIn("SYNTHETIC_TEST_SECRET", stdout + stderr)
         self.assertNotIn("synthetic-printer.invalid", stdout + stderr)
 
@@ -101,7 +102,7 @@ class CliTests(SyntheticProject):
         self.assertEqual(status, 0, stderr)
         created = list(output_dir.glob("*.3mf"))
         self.assertEqual(len(created), 1)
-        self.assertIn(str(created[0]), stdout)
+        self.assertIn(str(created[0].resolve()), stdout)
         with zipfile.ZipFile(created[0]) as archive:
             result = json.loads(archive.read("Metadata/project_settings.config"))
             self.assertEqual(archive.read("3D/3dmodel.model"), MODEL)
